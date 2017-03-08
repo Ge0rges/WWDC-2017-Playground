@@ -154,7 +154,10 @@ class GameScene: SKScene {
     for row in 0...numbersOfRows {
       for column in 0...numberOfColumns {
         let cell: Cell = cells[row][column]
-        if cell.numberOfLiveNeighbours == 3 {// First rule. If a cell has 3 living neighbours exactly, it lives.
+        if cell.numberOfLiveNeighbours == 2 && cell.isAlive {
+          cell.isAlive = true;// Fourth rule, it may live if it has 2 (or 3) living neighbours
+          
+        } else if cell.numberOfLiveNeighbours == 3 {// First rule. If a cell has 3 living neighbours exactly, it lives.
           cell.isAlive = true
           
           // Second rule, if a cell has less then 2 living neighbours it dies from underpopulation.
