@@ -24,14 +24,14 @@ class Cell: SKShapeNode {
 
 class GameScene: SKScene {
   // Basic game variables
-  let gridWidth = 100// Grid width.
-  let gridHeight = 100// Grid height.
-  let numbersOfRows = 8// Number of cell rows. Warning, incrementing this may cause memory issues since we use for loops.
-  let numberOfColumns = 8// Number of cell columns. Warning, incrementing this may cause memory issues since we use for loops.
+  let gridWidth = 500// Grid width.
+  let gridHeight = 500// Grid height.
+  let numbersOfRows = 100// Number of cell rows. Warning, incrementing this may cause memory issues since we use for loops.
+  let numberOfColumns = 100// Number of cell columns. Warning, incrementing this may cause memory issues since we use for loops.
   let gridLowerLeftCorner:CGPoint = CGPoint(x: 0, y: 0)
   
   var cells: [[Cell]] = []// Initialize a 2D Array (Rows, Columns)
-  let marginBetweenCells = 5// Space between each cell
+  let marginBetweenCells = 10// Space between each cell
   
   // Used to track generations
   var previousUpdateTime:CFTimeInterval = 0
@@ -56,7 +56,9 @@ class GameScene: SKScene {
   
   
   // Initialize the initial game state
-  override func sceneDidLoad() {
+  override func didMove(to view: SKView) {
+    self.backgroundColor = #colorLiteral(red: 0.4392156899, green: 0.01176470611, blue: 0.1921568662, alpha: 1)
+    
     let cellSize = calculateCellSize()
     for row in 0...numbersOfRows {// For each row
       var cellRow:[Cell] = []// Initialize an array of cells
@@ -65,8 +67,8 @@ class GameScene: SKScene {
         // Create a cell node
         let cell = Cell(rectOf: cellSize)
         cell.position = getCellPosition(row: row, column: column)
-        cell.fillColor = #colorLiteral(red: 0.3411764801, green: 0.6235294342, blue: 0.1686274558, alpha: 1);
-        cell.isAlive = false;// Initially everyone is dead. Mouahahah!
+        cell.fillColor = #colorLiteral(red: 0.3411764801, green: 0.6235294342, blue: 0.1686274558, alpha: 1)
+        cell.isAlive = (Int(arc4random_uniform(99) + 1) < 50) ? true : false;// Random initial state
         
         // Add the cell to the scene and to the current row.
         self.addChild(cell)
@@ -88,21 +90,21 @@ class GameScene: SKScene {
     
     if isValidCell(row: r, column: c) {
       return cells[r][c]
-    
+      
     } else {
       return nil
     }
   }
   
   // When the user touches a cell, BRING IT TO LIFE!!
-//  override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-//    for touch: AnyObject in touches {
-//      var selectedCell: Cell? = getCellAtPosition(xPos: Int(touch.locationInNode(self).x), yPos: Int(touch.locationInNode(self).y))
-//      if let cell = selectedCell {
-//        cell.isAlive = !cell.isAlive
-//      }
-//    }
-//  }
+  //  override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+  //    for touch: AnyObject in touches {
+  //      var selectedCell: Cell? = getCellAtPosition(xPos: Int(touch.locationInNode(self).x), yPos: Int(touch.locationInNode(self).y))
+  //      if let cell = selectedCell {
+  //        cell.isAlive = !cell.isAlive
+  //      }
+  //    }
+  //  }
   
   // We perform the game logic within the update function.
   override func update(_ currentTime: CFTimeInterval) {
@@ -116,7 +118,7 @@ class GameScene: SKScene {
       timeCounter = 0
       nextGeneration()// Update our generation
     }
-  
+    
     previousUpdateTime = currentTime
   }
   
@@ -154,8 +156,8 @@ class GameScene: SKScene {
         let cell: Cell = cells[row][column]
         if cell.numberOfLiveNeighbours == 3 {// First rule. If a cell has 3 living neighbours exactly, it lives.
           cell.isAlive = true
-        
-// Second rule, if a cell has less then 2 living neighbours it dies from underpopulation.
+          
+          // Second rule, if a cell has less then 2 living neighbours it dies from underpopulation.
         } else if cell.numberOfLiveNeighbours < 2 || cell.numberOfLiveNeighbours > 3 {// Third rule, if it has more then 3, it dies from overpopulation. Pretty neat conway!
           cell.isAlive = false
         }
@@ -163,6 +165,7 @@ class GameScene: SKScene {
     }
   }
 }
+
 
 /*: Playground Scene Setup */
 
