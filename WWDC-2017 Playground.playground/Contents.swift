@@ -10,6 +10,9 @@ import SpriteKit
 import Cocoa
 import PlaygroundSupport
 
+// Basic dimensions for our scene
+let sceneFrame = CGRect(x: 0, y: 0, width: 500, height: 500)// Divisible by 2,5,10 and 100! Yay!(?)
+
 /*: Custom Cell SKShapeNode Subclass */
 class Cell: SKShapeNode {
   var numberOfLiveNeighbours = 0// Tracks the number of live neighbours for this cell
@@ -24,10 +27,10 @@ class Cell: SKShapeNode {
 
 class GameScene: SKScene {
   // Basic game variables
-  let gridWidth = 500// Grid width.
-  let gridHeight = 500// Grid height.
-  let numbersOfRows = 100// Number of cell rows. Warning, incrementing this may cause memory issues since we use for loops.
-  let numberOfColumns = 100// Number of cell columns. Warning, incrementing this may cause memory issues since we use for loops.
+  let gridWidth = Int(sceneFrame.size.width)// Grid width.
+  let gridHeight = Int(sceneFrame.size.height)// Grid height.
+  let numbersOfRows = 8// Number of cell rows. Warning, incrementing this may cause memory issues since we use for loops.
+  let numberOfColumns = 8// Number of cell columns. Warning, incrementing this may cause memory issues since we use for loops.
   let gridLowerLeftCorner:CGPoint = CGPoint(x: 0, y: 0)
   
   var cells: [[Cell]] = []// Initialize a 2D Array (Rows, Columns)
@@ -60,10 +63,10 @@ class GameScene: SKScene {
     self.backgroundColor = #colorLiteral(red: 0.4392156899, green: 0.01176470611, blue: 0.1921568662, alpha: 1)
     
     let cellSize = calculateCellSize()
-    for row in 0...numbersOfRows {// For each row
+    for row in 0..<numbersOfRows {// For each row
       var cellRow:[Cell] = []// Initialize an array of cells
       
-      for column in 0...numberOfColumns {// For each column
+      for column in 0..<numberOfColumns {// For each column
         // Create a cell node
         let cell = Cell(rectOf: cellSize)
         cell.position = getCellPosition(row: row, column: column)
@@ -96,16 +99,6 @@ class GameScene: SKScene {
     }
   }
   
-  // When the user touches a cell, BRING IT TO LIFE!!
-  //  override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-  //    for touch: AnyObject in touches {
-  //      var selectedCell: Cell? = getCellAtPosition(xPos: Int(touch.locationInNode(self).x), yPos: Int(touch.locationInNode(self).y))
-  //      if let cell = selectedCell {
-  //        cell.isAlive = !cell.isAlive
-  //      }
-  //    }
-  //  }
-  
   // We perform the game logic within the update function.
   override func update(_ currentTime: CFTimeInterval) {
     // Keep track of a generation here.
@@ -127,11 +120,10 @@ class GameScene: SKScene {
     updateCells()
   }
   
-  // A terribly designed function to get each neighbour and check if they're living.
-  // One of you engineers at Appke should right back with a better function to do this :P
+  // Get each neighbour and check if they're living for each cell.
   func countLivingNeighbors() {
-    for row in 0...numbersOfRows {
-      for column in 0...numberOfColumns {
+    for row in 0..<numbersOfRows {
+      for column in 0..<numberOfColumns {
         var numberOfLiveNeighbours: Int = 0
         
         for i in (row-1)...(row+1) {
@@ -151,8 +143,8 @@ class GameScene: SKScene {
   
   // Cycle through every *single* cell and update them based on the 3 laws.
   func updateCells() {
-    for row in 0...numbersOfRows {
-      for column in 0...numberOfColumns {
+    for row in 0..<numbersOfRows {
+      for column in 0..<numberOfColumns {
         let cell: Cell = cells[row][column]
         if cell.numberOfLiveNeighbours == 2 && cell.isAlive {
           cell.isAlive = true;// Fourth rule, it may live if it has 2 (or 3) living neighbours
@@ -164,22 +156,23 @@ class GameScene: SKScene {
         } else if cell.numberOfLiveNeighbours < 2 || cell.numberOfLiveNeighbours > 3 {// Third rule, if it has more then 3, it dies from overpopulation. Pretty neat conway!
           cell.isAlive = false
         }
+        
+        // Make it slightly more exciting by giving it a random chance to come back to life (1.9%)
+        if (!cell.isAlive) {
+        cell.isAlive = (Int(arc4random_uniform(99) + 1) < 1);// Random initial state
+        }
       }
     }
   }
 }
 
-
 /*: Playground Scene Setup */
 
-// Basic dimensions for our scene
-let frame = CGRect(x: 0, y: 0, width: 100, height: 100)// Divisible by 2,5,10 and 100! Yay!(?)
-
 // Create a scene, make it look nice
-var scene = GameScene(size: frame.size)
+var scene = GameScene(size: sceneFrame.size)
 scene.backgroundColor = #colorLiteral(red: 0.5725490451, green: 0, blue: 0.2313725501, alpha: 1);
 
 // Set up the view and show the scene
-let view = SKView(frame: frame)
+let view = SKView(frame: sceneFrame)
 view.presentScene(scene)
 PlaygroundPage.current.liveView = view
