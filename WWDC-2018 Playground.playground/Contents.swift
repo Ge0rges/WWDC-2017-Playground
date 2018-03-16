@@ -1,8 +1,6 @@
 /*: Playground - noun: a place where people can play
  
- In this playground I attempt to recreate the famously known cellular automaton: Conway's Game of Life.
- We'll be using SpriteKit versus Metal here as it won't require heavy graphics usage like Apple's own Metal Demo that does the same thing.
- In an attempt to here what life is like, every cell is assigned a unique frequency that it plays when alive.
+ In this playground I give semi-static life last year's WWDC famous background.
  */
 
 import SpriteKit
@@ -10,14 +8,14 @@ import GameplayKit
 import PlaygroundSupport
 
 // Basic dimensions for our scene
-let sceneFrame = CGRect(x: 0, y: 0, width: 500, height: 500)// Divisible by 2,5,10 and 100! Yay!(?)
+let sceneFrame = CGRect(x: 0, y: 0, width: 500, height: 500)
 
 class GameScene: SKScene {
   
-  let numberOfPeople: Int = 11;// The number of people in the crowd. Playgrounds are the worst memory hog so this won't work above ~30 unless you have serious RAM.
+  let numberOfPeople: Int = 11;// The number of people in the crowd. The  playground is a memory hog, max 30.
   var peopleNodes: [SKSpriteNode] = [];// Holds all the sprites
   var peopleAgents: [GKAgent2D] = [];// Holds all the agents
-  var didSetup = false;// We only need to go through the burden of playground's memory managment once.
+  var didSetup = false;// Only need to do setup once.
   
   private var lastUpdateTime : TimeInterval = 0
   
@@ -60,7 +58,7 @@ class GameScene: SKScene {
       for agent in self.peopleAgents {
         self.peopleAgents.remove(at: self.peopleAgents.index(of: agent)!);
         let avoidGoal = GKGoal.init(toAvoid: self.peopleAgents, maxPredictionTime: 100);
-        let cohereGoal = GKGoal.init(toCohereWith: self.peopleAgents, maxDistance: 10, maxAngle: Float(M_PI_2));
+        let cohereGoal = GKGoal.init(toCohereWith: self.peopleAgents, maxDistance: 10, maxAngle: Float(Double.pi/2));
         agent.behavior?.setWeight(60, for: avoidGoal);
         agent.behavior?.setWeight(60, for: cohereGoal);
         
